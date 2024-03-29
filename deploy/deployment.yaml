@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-sync-forcer
+  labels:
+    app: argocd-syncer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-syncer
+  template:
+    metadata:
+      labels:
+        app: argocd-syncer
+    spec:
+      serviceAccountName: argocd-sync-forcer-sa
+      containers:
+        - name: fsync
+          image: docker.io/hubdockername/argocd-sync-forcer:v0.1.1
+          imagePullPolicy: Always
+          #command: ["/bin/sh", "-c", "--"]
+          #args:
+          #  - |
+          #    sleep 99999;
+          env:
+            - name: "LOG_LEVEL"
+              value: "info" # debug, info, warn, fatal
+            - name: "LOG_FORMAT"
+              value: "text" # text, json
+          envFrom:
+          - secretRef:
+              name: argocd-sync-forcer-secret
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20 
+            failureThreshold: 5 
+
+

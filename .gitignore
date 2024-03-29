@@ -1,0 +1,24 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (created by `go mod tidy` or `go get`)
+/vendor/
+/Godeps/
+
+# Environment configuration file
+#.env
+
+# IDE files
+.idea/
+.vscode/
+
+deploy/pod.yaml
+
+/bin/*
